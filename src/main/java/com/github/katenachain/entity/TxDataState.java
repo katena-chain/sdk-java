@@ -16,10 +16,10 @@ import java.util.Date;
 public class TxDataState {
 
     @SerializedName("chain_id")
-    private String chainId;
+    private String chainID;
 
     @SerializedName("data")
-    private TxData txData;
+    private TxData data;
 
     @SerializedName("nonce_time")
     private Date nonceTime;
@@ -27,9 +27,9 @@ public class TxDataState {
     /**
      * TxDataState constructor.
      */
-    public TxDataState(String chainId, Date nonceTime, TxData txData) {
-        this.chainId = chainId;
+    public TxDataState(String chainID, Date nonceTime, TxData data) {
+        this.chainID = chainID;
         this.nonceTime = nonceTime;
-        this.txData = txData;
+        this.data = data;
     }
 }

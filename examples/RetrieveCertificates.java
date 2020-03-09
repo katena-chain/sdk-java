@@ -7,26 +7,27 @@
 
 import com.github.katenachain.Transactor;
 import com.github.katenachain.entity.api.TxWrapper;
-import com.github.katenachain.entity.api.TxWrappers;
 import com.github.katenachain.entity.TxData;
+import com.github.katenachain.entity.api.TxWrappers;
 import com.github.katenachain.entity.certify.CertificateRawV1;
 import com.github.katenachain.entity.certify.CertificateEd25519V1;
 import com.github.katenachain.entity.certify.Certify;
 import com.github.katenachain.exceptions.ApiException;
+import com.github.katenachain.utils.Common;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class RetrieveCertificatesHistory {
+public class RetrieveCertificates {
     public static void main(String[] args) {
-        // Alice wants to retrieve a certificate history
+        // Alice wants to retrieve certificates
 
         // Common Katena network information
-        String apiUrl = "https://api.test.katena.transchain.io/api/v1";
+        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
 
         // Alice Katena network information
-        String aliceCompanyChainId = "abcdef";
+        String aliceCompanyBcid = "abcdef";
 
         // Create a Katena API helper
         Transactor transactor = new Transactor(apiUrl);
@@ -35,14 +36,12 @@ public class RetrieveCertificatesHistory {
         String certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
 
         try {
-            // Retrieve a version 1 of a certificate history from Katena
-            TxWrappers txWrappers = transactor.retrieveCertificatesHistory(aliceCompanyChainId, certificateUuid);
+            // Retrieve a version 1 of a certificates from Katena
+            TxWrappers txWrappers = transactor.retrieveCertificates(aliceCompanyBcid, certificateUuid, 1, Common.DEFAULT_PER_PAGE_PARAM);
 
             for (TxWrapper txWrapper : txWrappers.getTxs()
             ) {
-
                 TxData txData = txWrapper.getTx().getData();
-
                 System.out.println("Transaction status");
                 System.out.println(String.format("  Code    : %d", txWrapper.getStatus().getCode()));
                 System.out.println(String.format("  Message : %s", txWrapper.getStatus().getMessage()));

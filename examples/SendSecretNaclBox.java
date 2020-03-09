@@ -21,12 +21,12 @@ public class SendSecretNaclBox {
         // Alice wants to send a nacl box secret to Bob to encrypt an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://api.test.katena.transchain.io/api/v1";
-        String chainId = "katena-chain-test";
+        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
+        String chainID = "katena-chain-preprod";
 
         // Alice Katena network information
         String aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-        String aliceCompanyChainId = "abcdef";
+        String aliceCompanyBcid = "abcdef";
         com.github.katenachain.crypto.ED25519.PrivateKey aliceSignPrivateKey = new com.github.katenachain.crypto.ED25519.PrivateKey(aliceSignPrivateKeyBase64);
 
         // Nacl box information
@@ -36,7 +36,7 @@ public class SendSecretNaclBox {
         com.github.katenachain.crypto.Nacl.PublicKey bobCryptPublicKey = new com.github.katenachain.crypto.Nacl.PublicKey(bobCryptPublicKeyBase64);
 
         // Create a Katena API helper
-        Transactor transactor = new Transactor(apiUrl, chainId, aliceCompanyChainId, aliceSignPrivateKey);
+        Transactor transactor = new Transactor(apiUrl, chainID, aliceCompanyBcid, aliceSignPrivateKey);
 
         // Off-chain information Alice wants to send
         String secretUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
@@ -52,7 +52,7 @@ public class SendSecretNaclBox {
             System.out.println(String.format("  Code    : %d", txStatus.getCode()));
             System.out.println(String.format("  Message : %s", txStatus.getMessage()));
 
-        } catch (IOException | ApiException | InvalidKeyException | SignatureException | ClientException | NoSuchAlgorithmException e) {
+        } catch (IOException | ApiException | InvalidKeyException | SignatureException | NoSuchAlgorithmException | ClientException e) {
             System.out.print(e.getMessage());
         }
     }

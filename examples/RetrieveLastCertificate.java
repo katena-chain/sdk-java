@@ -17,15 +17,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class RetrieveCertificate {
+public class RetrieveLastCertificate {
     public static void main(String[] args) {
         // Alice wants to retrieve a certificate
 
         // Common Katena network information
-        String apiUrl = "https://api.test.katena.transchain.io/api/v1";
+        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
 
         // Alice Katena network information
-        String aliceCompanyChainId = "abcdef";
+        String aliceCompanyBcid = "abcdef";
 
         // Create a Katena API helper
         Transactor transactor = new Transactor(apiUrl);
@@ -35,7 +35,7 @@ public class RetrieveCertificate {
 
         try {
             // Retrieve a version 1 of a certificate from Katena
-            TxWrapper txWrapper = transactor.retrieveCertificate(aliceCompanyChainId, certificateUuid);
+            TxWrapper txWrapper = transactor.retrieveLastCertificate(aliceCompanyBcid, certificateUuid);
 
             TxData txData = txWrapper.getTx().getData();
             System.out.println("Transaction status");

@@ -11,7 +11,11 @@ import okhttp3.HttpUrl;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Uri {
+public class Common {
+
+    private static final String PAGE_PARAM = "page";
+    private static final String PER_PAGE_PARAM = "per_page";
+    public static final int DEFAULT_PER_PAGE_PARAM = 10;
 
     /**
      * joins the base path and paths array and adds the query values to return a new uri.
@@ -34,5 +38,23 @@ public class Uri {
         }
 
         return builder.build();
+    }
+
+    /**
+     * concatenates a company bcid and a uuid into a txid.
+     */
+    public static String formatTxid(String companyBcid, String uuid) {
+        return String.format("%s-%s", companyBcid, uuid);
+    }
+
+    /**
+     * returns the query params array to request a pagination.
+     */
+    public static HashMap<String, String> getPaginationQueryParams(int page, int perPage) {
+        HashMap<String, String> queryParams = new HashMap<>();
+        queryParams.put(PAGE_PARAM, String.valueOf(page));
+        queryParams.put(PER_PAGE_PARAM, String.valueOf(perPage));
+
+        return queryParams;
     }
 }

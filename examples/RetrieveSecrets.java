@@ -12,6 +12,7 @@ import com.github.katenachain.entity.api.TxWrappers;
 import com.github.katenachain.entity.TxData;
 import com.github.katenachain.entity.certify.SecretNaclBoxV1;
 import com.github.katenachain.exceptions.ApiException;
+import com.github.katenachain.utils.Common;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -22,10 +23,10 @@ public class RetrieveSecrets {
         // Bob wants to read a nacl box secret from Alice to decrypt an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://api.test.katena.transchain.io/api/v1";
+        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
 
         // Alice Katena network information
-        String aliceCompanyChainId = "abcdef";
+        String aliceCompanyBcid = "abcdef";
 
         // Create a Katena API helper
         Transactor transactor = new Transactor(apiUrl);
@@ -39,7 +40,7 @@ public class RetrieveSecrets {
 
         try {
             // Retrieve version 1 of secrets from Katena
-            TxWrappers txWrappers = transactor.retrieveSecrets(aliceCompanyChainId, secretUuid);
+            TxWrappers txWrappers = transactor.retrieveSecrets(aliceCompanyBcid, secretUuid, 1, Common.DEFAULT_PER_PAGE_PARAM);
 
             for (TxWrapper txWrapper : txWrappers.getTxs()
             ) {

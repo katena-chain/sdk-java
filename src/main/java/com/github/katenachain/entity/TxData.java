@@ -10,12 +10,7 @@ package com.github.katenachain.entity;
  * TxData interface defines the methods a concrete TxData must implement.
  */
 public interface TxData {
-
     String getType();
 
     String getId();
-
-    String getNamespace();
-
-    String getSubNamespace();
 }

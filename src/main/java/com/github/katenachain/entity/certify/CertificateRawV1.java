@@ -35,16 +35,6 @@ public class CertificateRawV1 implements TxData {
         return this.id;
     }
 
-    @Override
-    public String getNamespace() {
-        return Certify.getNamespaceCertify();
-    }
-
-    @Override
-    public String getSubNamespace() {
-        return Certify.getCertificateSubNamespace();
-    }
-
     public byte[] getValue() {
         return this.value;
     }

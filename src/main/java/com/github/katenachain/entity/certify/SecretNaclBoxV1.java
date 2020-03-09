@@ -39,15 +39,6 @@ public class SecretNaclBoxV1 implements TxData {
         return this.id;
     }
 
-    @Override
-    public String getNamespace() {
-        return Certify.getNamespaceCertify();
-    }
-
-    @Override
-    public String getSubNamespace() {
-        return Certify.getSecretSubNamespace();
-    }
 
     public PublicKey getSender() {
         return this.sender;

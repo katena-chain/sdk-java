@@ -37,16 +37,6 @@ public class CertificateEd25519V1 implements TxData {
         return this.id;
     }
 
-    @Override
-    public String getNamespace() {
-        return Certify.getNamespaceCertify();
-    }
-
-    @Override
-    public String getSubNamespace() {
-        return Certify.getCertificateSubNamespace();
-    }
-
     public PublicKey getSigner() {
         return this.signer;
     }

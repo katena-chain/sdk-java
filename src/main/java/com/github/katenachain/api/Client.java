@@ -7,7 +7,7 @@
 package com.github.katenachain.api;
 
 import com.github.katenachain.entity.api.RawResponse;
-import com.github.katenachain.utils.Uri;
+import com.github.katenachain.utils.Common;
 import okhttp3.*;
 
 import java.io.*;
@@ -63,7 +63,7 @@ public class Client {
      */
     private RawResponse doRequest(String method, String route, byte[] body, HashMap<String, String> queryValues) throws IOException {
 
-        HttpUrl httpUrl = Uri.getUri(this.apiUrl, new String[]{route}, queryValues);
+        HttpUrl httpUrl = Common.getUri(this.apiUrl, new String[]{route}, queryValues);
 
         Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(httpUrl);
