@@ -24,6 +24,10 @@ public class Tx {
 
     /**
      * Tx constructor.
+     * @param signer
+     * @param signature
+     * @param data
+     * @param nonceTime
      */
     public Tx(TxData data, Date nonceTime, byte[] signature, PublicKey signer) {
         this.data = data;

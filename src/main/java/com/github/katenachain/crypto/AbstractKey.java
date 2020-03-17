@@ -16,11 +16,15 @@ public class AbstractKey {
 
     /**
      * AbstractKey constructor.
+     * @param key
      */
     public AbstractKey(byte[] key) {
         this.key = key;
     }
 
+    /**
+     * @return
+     */
     public byte[] getKey() {
         return this.key;
     }

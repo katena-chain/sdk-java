@@ -24,6 +24,7 @@ public class Client {
 
     /**
      * Client constructor.
+     * @param apiUrl
      */
     public Client(String apiUrl) {
         this.apiUrl = apiUrl;
@@ -32,6 +33,9 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a GET HTTP request.
+     * @param route
+     * @return
+     * @throws IOException
      */
     public RawResponse get(String route) throws IOException {
         return this.doRequest("GET", route, null, new HashMap<>());
@@ -39,6 +43,10 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a GET HTTP request.
+     * @param route
+     * @param queryValues
+     * @return
+     * @throws IOException
      */
     public RawResponse get(String route, HashMap<String, String> queryValues) throws IOException {
         return this.doRequest("GET", route, null, queryValues);
@@ -46,6 +54,10 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a POST HTTP request.
+     * @param route
+     * @param body
+     * @return
+     * @throws IOException
      */
     public RawResponse post(String route, byte[] body) throws IOException {
         return this.doRequest("POST", route, body, new HashMap<>());
@@ -53,6 +65,11 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a POST HTTP request.
+     * @param body
+     * @param route
+     * @param queryValues
+     * @return
+     * @throws IOException
      */
     public RawResponse post(String route, byte[] body, HashMap<String, String> queryValues) throws IOException {
         return this.doRequest("POST", route, body, queryValues);
@@ -60,6 +77,12 @@ public class Client {
 
     /**
      * uses the okhttp3.OkHttpClient to call a distant api and returns a response.
+     * @param queryValues
+     * @param route
+     * @param body
+     * @param method
+     * @return
+     * @throws IOException
      */
     private RawResponse doRequest(String method, String route, byte[] body, HashMap<String, String> queryValues) throws IOException {
 

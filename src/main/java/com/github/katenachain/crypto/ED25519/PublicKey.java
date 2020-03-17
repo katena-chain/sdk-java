@@ -28,6 +28,7 @@ public class PublicKey extends AbstractKey {
 
     /**
      * PublicKey constructor with byte[].
+     * @param key
      */
     public PublicKey(byte[] key) {
         super(key);
@@ -35,6 +36,12 @@ public class PublicKey extends AbstractKey {
 
     /**
      * indicates if a message and a signature match.
+     * @param message
+     * @param signature
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
      */
     public boolean verify(byte[] message, byte[] signature) throws InvalidKeyException, SignatureException, NoSuchAlgorithmException {
         EdDSAEngine engine = new EdDSAEngine(MessageDigest.getInstance(ed25519.getHashAlgorithm()));

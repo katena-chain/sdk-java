@@ -20,6 +20,7 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * PrivateKey constructor with byte[].
+     * @param key
      */
     public PrivateKey(byte[] key) {
         super(key);
@@ -28,6 +29,7 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * PrivateKey constructor with base64 String.
+     * @param privateKeyBase64
      */
     public PrivateKey(String privateKeyBase64) {
         this(Base64.getDecoder().decode(privateKeyBase64));
@@ -35,6 +37,9 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * encrypts a plain text message decipherable afterwards by the recipient private key.
+     * @param message
+     * @param recipientPublicKey
+     * @return
      */
     public Hashtable<String, byte[]> seal(byte[] message, PublicKey recipientPublicKey) {
         Box box = new Box(recipientPublicKey.getKey(), Arrays.copyOfRange(this.key, 0, 32));
@@ -51,6 +56,10 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * decrypts an encrypted message with the appropriate sender information.
+     * @param encryptedMessage
+     * @param nonce
+     * @param senderPublicKey
+     * @return
      */
     public byte[] open(byte[] encryptedMessage, PublicKey senderPublicKey, byte[] nonce) {
         Box box = new Box(senderPublicKey.getKey(), Arrays.copyOfRange(this.key, 0, 32));
@@ -63,6 +72,9 @@ public class PrivateKey extends AbstractKey {
 
     }
 
+    /**
+     * @return
+     */
     public PublicKey getPublicKey() {
         return this.publicKey;
     }

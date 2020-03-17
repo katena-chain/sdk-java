@@ -87,6 +87,11 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
@@ -137,6 +142,19 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.6</version>
         <executions>
@@ -174,9 +192,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:git://github.com/katena-chain/sdk-js.git</connection>
-    <developerConnection>scm:git:ssh://github.com/katena-chain/sdk-js.git</developerConnection>
-    <url>http://github.com/katena-chain/sdk-js/tree/master</url>
+    <connection>scm:git:git://github.com/katena-chain/sdk-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com/katena-chain/sdk-java.git</developerConnection>
+    <url>http://github.com/katena-chain/sdk-java/tree/master</url>
   </scm>
 
 

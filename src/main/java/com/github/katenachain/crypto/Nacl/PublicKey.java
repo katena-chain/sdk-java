@@ -17,6 +17,7 @@ public class PublicKey extends AbstractKey {
 
     /**
      * PublicKey constructor with byte[].
+     * @param key
      */
     public PublicKey(byte[] key) {
         super(key);
@@ -24,6 +25,7 @@ public class PublicKey extends AbstractKey {
 
     /**
      * PublicKey constructor with base64 String.
+     * @param publicKeyBase64
      */
     public PublicKey(String publicKeyBase64) {
         this(Base64.getDecoder().decode(publicKeyBase64));

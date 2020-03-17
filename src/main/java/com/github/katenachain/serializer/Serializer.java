@@ -37,6 +37,8 @@ public class Serializer {
 
     /**
      * serializes data in the appropriate format.
+     * @param object
+     * @return
      */
     public String serialize(Object object) {
 
@@ -46,6 +48,9 @@ public class Serializer {
 
     /**
      * deserializes data into the given type.
+     * @param clazz
+     * @param content
+     * @return
      */
     public Object deserialize(String content, Class clazz) {
         Gson gson = builder.create();

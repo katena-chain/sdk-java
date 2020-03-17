@@ -10,7 +10,7 @@ package com.github.katenachain.entity.api;
  * TxStatus is a tx blockchain status.
  * 0: OK
  * 1: PENDING
- * >1: ERROR WITH CORRESPONDING CODE
+ * Over 1: ERROR WITH CORRESPONDING CODE
  */
 public class TxStatus {
 

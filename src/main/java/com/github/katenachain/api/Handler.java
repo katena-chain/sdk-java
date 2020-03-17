@@ -48,6 +48,8 @@ public class Handler {
 
     /**
      * Handler constructor.
+     * @param apiUrl
+     * @param serializer
      */
     public Handler(String apiUrl, Serializer serializer) {
         this.apiClient = new Client(apiUrl);
@@ -56,6 +58,10 @@ public class Handler {
 
     /**
      * accepts a tx and sends it to the Api to return a tx status or throws an error.
+     * @param tx
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public TxStatus sendTx(Tx tx) throws IOException, ApiException {
         RawResponse apiResponse = this.apiClient.post(TXS_PATH, this.serializer.serialize(tx).getBytes());
@@ -69,6 +75,10 @@ public class Handler {
 
     /**
      * fetches the API and returns a tx wrapper or throws an error.
+     * @param id
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public TxWrapper retrieveLastCertificate(String id) throws IOException, ApiException {
         RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", CERTIFICATES_PATH, id, LAST_PATH));
@@ -82,6 +92,12 @@ public class Handler {
 
     /**
      * fetches the API and returns a tx wrappers or throws an error.
+     * @param id
+     * @param page
+     * @param txPerPage
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public TxWrappers retrieveCertificates(String id, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
@@ -96,6 +112,12 @@ public class Handler {
 
     /**
      * fetches the API and returns a tx wrappers or throws an error.
+     * @param txPerPage
+     * @param page
+     * @param id
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public TxWrappers retrieveSecrets(String id, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
@@ -110,6 +132,13 @@ public class Handler {
 
     /**
      * fetches the API and returns a tx wrappers or throws an error.
+     * @param id
+     * @param page
+     * @param txPerPage
+     * @param txCategory
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public TxWrappers retrieveTxs(String txCategory, String id, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
@@ -124,6 +153,12 @@ public class Handler {
 
     /**
      * fetches the API and returns the list of keyV1 for a company or throws an error.
+     * @param txPerPage
+     * @param page
+     * @param companyBcid
+     * @return
+     * @throws IOException
+     * @throws ApiException
      */
     public KeyV1[] retrieveCompanyKeys(String companyBcid, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
@@ -138,6 +173,14 @@ public class Handler {
 
     /**
      * signs a tx data and returns a new tx ready to be sent.
+     * @param chainID
+     * @param nonceTime
+     * @param privateKey
+     * @param txData
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
      */
     public Tx signTx(PrivateKey privateKey, String chainID, Date nonceTime, TxData txData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         byte[] txDataState = this.getTxDataState(chainID, nonceTime, txData);
@@ -147,6 +190,10 @@ public class Handler {
 
     /**
      * returns the sorted and marshaled json representation of a TxData ready to be signed.
+     * @param txData
+     * @param nonceTime
+     * @param chainID
+     * @return
      */
     public byte[] getTxDataState(String chainID, Date nonceTime, TxData txData) {
         return this.serializer.serialize(new TxDataState(chainID, nonceTime, txData)).getBytes();

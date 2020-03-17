@@ -16,6 +16,8 @@ public class ApiException extends Exception {
 
     /**
      * ApiException constructor.
+     * @param code
+     * @param message
      */
     public ApiException(int code, String message) {
         super(message);

@@ -26,6 +26,9 @@ public class TxDataState {
 
     /**
      * TxDataState constructor.
+     * @param data
+     * @param nonceTime
+     * @param chainID
      */
     public TxDataState(String chainID, Date nonceTime, TxData data) {
         this.chainID = chainID;

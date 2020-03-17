@@ -13,6 +13,7 @@ public class ClientException extends Exception {
 
     /**
      * ClientException constructor.
+     * @param message
      */
     public ClientException(String message) {
         super(message);

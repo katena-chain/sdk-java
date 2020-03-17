@@ -21,6 +21,10 @@ public class SecretNaclBoxV1 implements TxData {
 
     /**
      * SecretNaclBoxV1 constructor.
+     * @param id
+     * @param content
+     * @param nonce
+     * @param sender
      */
     public SecretNaclBoxV1(byte[] content, String id, byte[] nonce, PublicKey sender) {
         this.content = content;

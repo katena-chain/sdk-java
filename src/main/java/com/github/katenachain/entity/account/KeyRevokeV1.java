@@ -21,6 +21,8 @@ public class KeyRevokeV1 implements TxData {
 
     /**
      * KeyCreateV1 constructor.
+     * @param publicKey
+     * @param id
      */
     public KeyRevokeV1(String id, PublicKey publicKey) {
         this.id = id;

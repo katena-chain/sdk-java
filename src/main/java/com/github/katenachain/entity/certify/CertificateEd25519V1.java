@@ -20,6 +20,9 @@ public class CertificateEd25519V1 implements TxData {
 
     /**
      * CertificateEd25519V1 constructor.
+     * @param id
+     * @param signature
+     * @param signer
      */
     public CertificateEd25519V1(String id, byte[] signature, PublicKey signer) {
         this.id = id;

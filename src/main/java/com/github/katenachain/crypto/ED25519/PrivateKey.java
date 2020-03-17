@@ -25,6 +25,7 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * PrivateKey constructor with byte[].
+     * @param privateKey
      */
     public PrivateKey(byte[] privateKey) {
         super(privateKey);
@@ -33,17 +34,26 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * PrivateKey constructor with base64 String.
+     * @param privateKeyBase64
      */
     public PrivateKey(String privateKeyBase64) {
         this(Base64.getDecoder().decode(privateKeyBase64));
     }
 
+    /**
+     * @return
+     */
     public PublicKey getPublicKey() {
         return this.publicKey;
     }
 
     /**
      * accepts a message and returns its corresponding Ed25519 signature.
+     * @param message
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
      */
     public byte[] sign(byte[] message) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature signature = new EdDSAEngine(MessageDigest.getInstance(ed25519.getHashAlgorithm()));

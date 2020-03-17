@@ -19,6 +19,8 @@ public class CertificateRawV1 implements TxData {
 
     /**
      * CertificateRawV1 constructor.
+     * @param id
+     * @param value
      */
     public CertificateRawV1(String id, byte[] value) {
         this.id = id;

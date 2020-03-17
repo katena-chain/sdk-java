@@ -23,6 +23,7 @@ public class TxDataSerializer implements JsonSerializer<TxData>, JsonDeserialize
 
     /**
      * Get available certificate type
+     * @return
      */
     public static HashMap<String, java.lang.Class> getAvailableTypes() {
         HashMap<String, java.lang.Class> availableTypes = new HashMap<>();

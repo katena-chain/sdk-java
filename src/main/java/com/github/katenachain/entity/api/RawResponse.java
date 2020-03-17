@@ -16,6 +16,8 @@ public class RawResponse {
 
     /**
      * RawResponse constructor.
+     * @param body
+     * @param statusCode
      */
     public RawResponse(int statusCode, byte[] body) {
         this.statusCode = statusCode;

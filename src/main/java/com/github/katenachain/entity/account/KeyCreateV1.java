@@ -24,6 +24,9 @@ public class KeyCreateV1 implements TxData {
 
     /**
      * KeyCreateV1 constructor.
+     * @param id
+     * @param publicKey
+     * @param role
      */
     public KeyCreateV1(String id, PublicKey publicKey, String role) {
         this.id = id;

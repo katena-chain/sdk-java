@@ -10,7 +10,7 @@
 <dependecy>
     <groupId>com.github.katena-chain</groupId>
     <artifactId>sdk-java</artifactId>
-    <version>1.1</version>
+    <version>1.2.0</version>
 </dependecy>
 ```
 
