@@ -22,7 +22,7 @@ public class RetrieveLastCertificate {
         // Alice wants to retrieve a certificate
 
         // Common Katena network information
-        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
+        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
         // Alice Katena network information
         String aliceCompanyBcid = "abcdef";

@@ -21,7 +21,7 @@ public class SendSecretNaclBox {
         // Alice wants to send a nacl box secret to Bob to encrypt an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
+        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
         String chainID = "katena-chain-preprod";
 
         // Alice Katena network information

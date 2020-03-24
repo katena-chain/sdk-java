@@ -24,7 +24,7 @@ public class SendKeyRevoke {
         // Alice wants to revoke a key for its company
 
         // Common Katena network information
-        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
+        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
         String chainID = "katena-chain-preprod";
 
         // Alice Katena network information

@@ -23,7 +23,7 @@ public class RetrieveSecrets {
         // Bob wants to read a nacl box secret from Alice to decrypt an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://nodes.preprod.katena.io/api/v1";
+        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
 
         // Alice Katena network information
         String aliceCompanyBcid = "abcdef";
