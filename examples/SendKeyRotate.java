@@ -9,7 +9,6 @@ import com.github.katenachain.Transactor;
 import com.github.katenachain.crypto.ED25519.PrivateKey;
 import com.github.katenachain.crypto.ED25519.PublicKey;
 import com.github.katenachain.entity.TxSigner;
-import com.github.katenachain.entity.account.Account;
 import com.github.katenachain.entity.api.SendTxResult;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.exceptions.ClientException;
@@ -26,9 +25,9 @@ import java.util.Base64;
 
 import static common.Log.printlnJson;
 
-public class SendKeyCreate {
+public class SendKeyRotate {
     public static void main(String[] args) {
-        // Alice wants to create a key for its company
+        // Alice wants to rotate a key for its company
 
         // Common Katena network information
         String apiUrl = Settings.apiUrl;
@@ -50,11 +49,8 @@ public class SendKeyCreate {
             PrivateKey newPrivateKey = Crypto.generateNewPrivateKeyEd25519();
             PublicKey newPublicKey = newPrivateKey.getPublicKey();
 
-            // Choose role between Account.DEFAULT_ROLE_ID or Account.COMPANY_ADMIN_ROLE_ID
-            String role = Account.DEFAULT_ROLE_ID;
-
-            // Send a version 1 of a key create on Katena
-            SendTxResult txResult = transactor.sendKeyCreateV1Tx(keyId, newPublicKey, role);
+            // Send a version 1 of a key rotate on Katena
+            SendTxResult txResult = transactor.sendKeyRotateV1Tx(keyId, newPublicKey);
 
             System.out.println("Result :");
             printlnJson(txResult);

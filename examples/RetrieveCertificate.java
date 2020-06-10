@@ -6,7 +6,8 @@
  */
 
 import com.github.katenachain.Transactor;
-import com.github.katenachain.entity.account.KeyV1;
+import com.github.katenachain.entity.api.TxResult;
+import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.utils.Common;
 import common.Settings;
@@ -15,9 +16,9 @@ import java.io.IOException;
 
 import static common.Log.printlnJson;
 
-public class RetrieveCompanyKeys {
+public class RetrieveCertificate {
     public static void main(String[] args) {
-        // Alice wants to retrieve the keys of its company
+        // Alice wants to retrieve txs related to a certificate
 
         // Common Katena network information
         String apiUrl = Settings.apiUrl;
@@ -28,12 +29,22 @@ public class RetrieveCompanyKeys {
         // Create a Katena API helper
         Transactor transactor = new Transactor(apiUrl);
 
-        try {
-            // Retrieve the keys from Katena
-            KeyV1[] keys = transactor.retrieveCompanyKeys(aliceCompanyBcId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+        // Certificate id Alice wants to retrieve
+        String certificateId = Settings.certificateId;
 
-            System.out.println("Keys list :");
-            printlnJson(keys);
+        try {
+            // Retrieve txs related to the certificate fqid
+            TxResults txResults = transactor.retrieveCertificateTxs(aliceCompanyBcId, certificateId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+
+            System.out.println("Tx list :");
+            printlnJson(txResults);
+
+            // Retrieve the last tx related to the certificate fqid
+            TxResult txResult = transactor.retrieveLastCertificateTx(aliceCompanyBcId, certificateId);
+
+            System.out.println("Last Tx :");
+            printlnJson(txResult);
+
         } catch (IOException | ApiException e) {
             System.out.println(e.getMessage());
         }

@@ -7,46 +7,48 @@
 
 import com.github.katenachain.Transactor;
 import com.github.katenachain.crypto.ED25519.PrivateKey;
-import com.github.katenachain.crypto.ED25519.PublicKey;
-import com.github.katenachain.entity.api.TxStatus;
+import com.github.katenachain.entity.TxSigner;
+import com.github.katenachain.entity.api.SendTxResult;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.exceptions.ClientException;
+import com.github.katenachain.utils.Common;
+import com.github.katenachain.utils.Crypto;
+import common.Settings;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.Base64;
+
+import static common.Log.printlnJson;
 
 public class SendKeyRevoke {
     public static void main(String[] args) {
         // Alice wants to revoke a key for its company
 
         // Common Katena network information
-        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-        String chainID = "katena-chain-preprod";
+        String apiUrl = Settings.apiUrl;
+        String chainId = Settings.chainId;
 
         // Alice Katena network information
-        String aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-        String aliceCompanyBcid = "abcdef";
-        PrivateKey aliceSignPrivateKey = new PrivateKey(aliceSignPrivateKeyBase64);
+        String aliceCompanyBcId = Settings.Company.bcId;
+        Settings.Key aliceSignKeyInfo = Settings.Company.ed25519Keys.get("alice");
+        PrivateKey aliceSignPrivateKey = Crypto.createPrivateKeyEd25519FromBase64(aliceSignKeyInfo.privateKeyStr);
+        String aliceSignPrivateKeyId = aliceSignKeyInfo.id;
 
         // Create a Katena API helper
-        Transactor transactor = new Transactor(apiUrl, chainID, aliceCompanyBcid, aliceSignPrivateKey);
+        TxSigner txSigner = new TxSigner(Common.concatFqId(aliceCompanyBcId, aliceSignPrivateKeyId), aliceSignPrivateKey);
+        Transactor transactor = new Transactor(apiUrl, chainId, txSigner);
 
         // Information Alice wants to send
-        String keyRevokeUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-        String newPublicKeyBase64 = "kaKih+STp93wMuKmw5tF5NlQvOlrGsahpSmpr/KwOiw=";
-        PublicKey newPublicKey = new PublicKey(Base64.getDecoder().decode(newPublicKeyBase64));
+        String keyId = Settings.keyId;
 
-        // Send a version 1 of a key revoke on Katena
         try {
-            TxStatus txStatus = transactor.sendKeyRevokeV1(keyRevokeUuid, newPublicKey);
+            // Send a version 1 of a key revoke on Katena
+            SendTxResult txResult = transactor.sendKeyRevokeV1Tx(keyId);
 
-            System.out.println("Transaction status");
-            System.out.println(String.format("  Code    : %d", txStatus.getCode()));
-            System.out.println(String.format("  Message : %s", txStatus.getMessage()));
+            System.out.println("Result :");
+            printlnJson(txResult);
         } catch (ApiException | IOException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | ClientException e) {
             System.out.print(e.getMessage());
         }

@@ -7,41 +7,49 @@
 
 import com.github.katenachain.crypto.ED25519.PrivateKey;
 import com.github.katenachain.Transactor;
-import com.github.katenachain.entity.api.TxStatus;
+import com.github.katenachain.entity.TxSigner;
+import com.github.katenachain.entity.api.SendTxResult;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.exceptions.ClientException;
+import com.github.katenachain.utils.Common;
+import com.github.katenachain.utils.Crypto;
+import common.Settings;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 
+import static common.Log.printlnJson;
+
 public class SendCertificateRaw {
     public static void main(String[] args) {
         // Alice wants to certify raw off-chain information
 
         // Common Katena network information
-        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-        String chainID = "katena-chain-preprod";
+        String apiUrl = Settings.apiUrl;
+        String chainId = Settings.chainId;
 
         // Alice Katena network information
-        String aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-        String aliceCompanyBcid = "abcdef";
-        PrivateKey aliceSignPrivateKey = new PrivateKey(aliceSignPrivateKeyBase64);
+        String aliceCompanyBcId = Settings.Company.bcId;
+        Settings.Key aliceSignKeyInfo = Settings.Company.ed25519Keys.get("alice");
+        PrivateKey aliceSignPrivateKey = Crypto.createPrivateKeyEd25519FromBase64(aliceSignKeyInfo.privateKeyStr);
+        String aliceSignPrivateKeyId = aliceSignKeyInfo.id;
 
         // Create a Katena API helper
-        Transactor transactor = new Transactor(apiUrl, chainID, aliceCompanyBcid, aliceSignPrivateKey);
+        TxSigner txSigner = new TxSigner(Common.concatFqId(aliceCompanyBcId, aliceSignPrivateKeyId), aliceSignPrivateKey);
+        Transactor transactor = new Transactor(apiUrl, chainId, txSigner);
 
         // Off-chain information Alice wants to send
-        String certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
+        String certificateId = Settings.certificateId;
         String dataRawSignature = "off_chain_data_raw_signature_from_java";
-        try {
-            // Send a version 1 of a certificate raw on Katena
-            TxStatus txStatus = transactor.sendCertificateRawV1(certificateUuid, dataRawSignature.getBytes());
 
-            System.out.println("Transaction status");
-            System.out.println(String.format("  Code    : %d", txStatus.getCode()));
-            System.out.println(String.format("  Message : %s", txStatus.getMessage()));
+        try {
+            // Send a version 1 of a certificate on Katena
+            SendTxResult txResult = transactor.sendCertificateRawV1Tx(certificateId, dataRawSignature.getBytes());
+
+            System.out.println("Result :");
+            printlnJson(txResult);
 
         } catch (IOException | ApiException | InvalidKeyException | SignatureException | NoSuchAlgorithmException | ClientException e) {
             System.out.print(e.getMessage());

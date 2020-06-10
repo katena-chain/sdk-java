@@ -7,43 +7,44 @@
 
 import com.github.katenachain.crypto.ED25519.PrivateKey;
 import com.github.katenachain.Transactor;
-import com.github.katenachain.entity.api.TxStatus;
-import com.github.katenachain.exceptions.ClientException;
+import com.github.katenachain.entity.TxSigner;
+import com.github.katenachain.entity.api.SendTxResult;
+import com.github.katenachain.utils.Common;
+import com.github.katenachain.utils.Crypto;
+import common.Settings;
 
-import java.util.*;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
-
+import static common.Log.printlnJson;
 
 public class SendCertificateEd25519 {
     public static void main(String[] args) {
         // Alice wants to certify an ed25519 signature of an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-        String chainID = "katena-chain-preprod";
+        String apiUrl = Settings.apiUrl;
+        String chainId = Settings.chainId;
 
         // Alice Katena network information
-        String aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-        String aliceCompanyBcid = "abcdef";
-        PrivateKey aliceSignPrivateKey = new PrivateKey(aliceSignPrivateKeyBase64);
+        String aliceCompanyBcId = Settings.Company.bcId;
+        Settings.Key aliceSignKeyInfo = Settings.Company.ed25519Keys.get("alice");
+        PrivateKey aliceSignPrivateKey = Crypto.createPrivateKeyEd25519FromBase64(aliceSignKeyInfo.privateKeyStr);
+        String aliceSignPrivateKeyId = aliceSignKeyInfo.id;
 
         // Create a Katena API helper
-        Transactor transactor = new Transactor(apiUrl, chainID, aliceCompanyBcid, aliceSignPrivateKey);
+        TxSigner txSigner = new TxSigner(Common.concatFqId(aliceCompanyBcId, aliceSignPrivateKeyId), aliceSignPrivateKey);
+        Transactor transactor = new Transactor(apiUrl, chainId, txSigner);
 
         try {
             // Off-chain information Alice want to send
-            String certificateUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-            String dataToSign = "off_chain_data_to_sign_from_java";
-            byte[] dataSignature = aliceSignPrivateKey.sign(dataToSign.getBytes());
+            String certificateId = Settings.certificateId;
+            Settings.KeyPair davidSignKeyInfo = Settings.OffChain.ed25519Keys.get("david");
+            PrivateKey davidSignPrivateKey = Crypto.createPrivateKeyEd25519FromBase64(davidSignKeyInfo.privateKeyStr);
+            byte[] dataSignature = davidSignPrivateKey.sign("off_chain_data_to_sign_from_java".getBytes());
 
-            // Send a version 1 of a certificate ed25519 on Katena
-            TxStatus txStatus = transactor.sendCertificateEd25519V1(certificateUuid, aliceSignPrivateKey.getPublicKey(), dataSignature);
+            // Send a version 1 of a certificate on Katena
+            SendTxResult txResult = transactor.sendCertificateEd25519V1Tx(certificateId, davidSignPrivateKey.getPublicKey(), dataSignature);
 
-            System.out.println("Transaction status");
-            System.out.println(String.format("  Code    : %d", txStatus.getCode()));
-            System.out.println(String.format("  Message : %s", txStatus.getMessage()));
+            System.out.println("Result :");
+            printlnJson(txResult);
 
         } catch (Exception e) {
             System.out.print(e.getMessage());

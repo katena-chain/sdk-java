@@ -6,9 +6,14 @@
  */
 
 import com.github.katenachain.Transactor;
-import com.github.katenachain.entity.api.TxStatus;
+import com.github.katenachain.crypto.ED25519.PrivateKey;
+import com.github.katenachain.entity.TxSigner;
+import com.github.katenachain.entity.api.SendTxResult;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.exceptions.ClientException;
+import com.github.katenachain.utils.Common;
+import com.github.katenachain.utils.Crypto;
+import common.Settings;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -16,41 +21,44 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Hashtable;
 
+import static common.Log.printlnJson;
+
 public class SendSecretNaclBox {
     public static void main(String[] args) {
         // Alice wants to send a nacl box secret to Bob to encrypt an off-chain data
 
         // Common Katena network information
-        String apiUrl = "https://nodes.test.katena.transchain.io/api/v1";
-        String chainID = "katena-chain-preprod";
+        String apiUrl = Settings.apiUrl;
+        String chainId = Settings.chainId;
 
         // Alice Katena network information
-        String aliceSignPrivateKeyBase64 = "7C67DeoLnhI6jvsp3eMksU2Z6uzj8sqZbpgwZqfIyuCZbfoPcitCiCsSp2EzCfkY52Mx58xDOyQLb1OhC7cL5A==";
-        String aliceCompanyBcid = "abcdef";
-        com.github.katenachain.crypto.ED25519.PrivateKey aliceSignPrivateKey = new com.github.katenachain.crypto.ED25519.PrivateKey(aliceSignPrivateKeyBase64);
+        String aliceCompanyBcId = Settings.Company.bcId;
+        Settings.Key aliceSignKeyInfo = Settings.Company.ed25519Keys.get("alice");
+        PrivateKey aliceSignPrivateKey = Crypto.createPrivateKeyEd25519FromBase64(aliceSignKeyInfo.privateKeyStr);
+        String aliceSignPrivateKeyId = aliceSignKeyInfo.id;
 
         // Nacl box information
-        String aliceCryptPrivateKeyBase64 = "nyCzhimWnTQifh6ucXLuJwOz3RgiBpo33LcX1NjMAsP1ZkQcdlDq64lTwxaDx0lq6LCQAUeYywyMUtfsvTUEeQ==";
-        com.github.katenachain.crypto.Nacl.PrivateKey aliceCryptPrivateKey = new com.github.katenachain.crypto.Nacl.PrivateKey(aliceCryptPrivateKeyBase64);
-        String bobCryptPublicKeyBase64 = "KiT9KIwaHOMELcqtPMsMVJLE5Hc9P60DZDrBGQcKlk8=";
-        com.github.katenachain.crypto.Nacl.PublicKey bobCryptPublicKey = new com.github.katenachain.crypto.Nacl.PublicKey(bobCryptPublicKeyBase64);
+        Settings.KeyPair aliceCryptKeyInfo = Settings.OffChain.x25519Keys.get("alice");
+        com.github.katenachain.crypto.Nacl.PrivateKey aliceCryptPrivateKey = Crypto.createPrivateKeyX25519FromBase64(aliceCryptKeyInfo.privateKeyStr);
+        Settings.KeyPair bobCryptKeyInfo = Settings.OffChain.x25519Keys.get("bob");
+        com.github.katenachain.crypto.Nacl.PublicKey bobCryptPublicKey = Crypto.createPublicKeyX25519FromBase64(bobCryptKeyInfo.publicKeyStr);
 
         // Create a Katena API helper
-        Transactor transactor = new Transactor(apiUrl, chainID, aliceCompanyBcid, aliceSignPrivateKey);
+        TxSigner txSigner = new TxSigner(Common.concatFqId(aliceCompanyBcId, aliceSignPrivateKeyId), aliceSignPrivateKey);
+        Transactor transactor = new Transactor(apiUrl, chainId, txSigner);
 
         // Off-chain information Alice wants to send
-        String secretUuid = "2075c941-6876-405b-87d5-13791c0dc53a";
-        String content = "off_chain_secret_to_sign_from_java";
+        String secretId = Settings.secretId;
+        String content = "off_chain_secret_to_crypt_from_java";
         try {
             // Alice will use its private key and Bob's public key to encrypt a message
             Hashtable<String, byte[]> encryptedInfo = aliceCryptPrivateKey.seal(content.getBytes(), bobCryptPublicKey);
 
             // Send a version 1 of a secret nacl box on Katena
-            TxStatus txStatus = transactor.sendSecretNaclBoxV1(secretUuid, aliceCryptPrivateKey.getPublicKey(), encryptedInfo.get("nonce"), encryptedInfo.get("encryptedMessage"));
+            SendTxResult txResult = transactor.sendSecretNaclBoxV1Tx(secretId, aliceCryptPrivateKey.getPublicKey(), encryptedInfo.get("nonce"), encryptedInfo.get("encryptedMessage"));
 
-            System.out.println("Transaction status");
-            System.out.println(String.format("  Code    : %d", txStatus.getCode()));
-            System.out.println(String.format("  Message : %s", txStatus.getMessage()));
+            System.out.println("Result :");
+            printlnJson(txResult);
 
         } catch (IOException | ApiException | InvalidKeyException | SignatureException | NoSuchAlgorithmException | ClientException e) {
             System.out.print(e.getMessage());
