@@ -4,12 +4,15 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.crypto.Nacl;
 
 import com.github.katenachain.crypto.AbstractKey;
 import org.abstractj.kalium.crypto.Box;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Random;
 
 /**
  * PrivateKey is an X25519 private key wrapper (64 bytes).
@@ -20,6 +23,7 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * PrivateKey constructor with byte[].
+     *
      * @param key
      */
     public PrivateKey(byte[] key) {
@@ -28,15 +32,8 @@ public class PrivateKey extends AbstractKey {
     }
 
     /**
-     * PrivateKey constructor with base64 String.
-     * @param privateKeyBase64
-     */
-    public PrivateKey(String privateKeyBase64) {
-        this(Base64.getDecoder().decode(privateKeyBase64));
-    }
-
-    /**
      * encrypts a plain text message decipherable afterwards by the recipient private key.
+     *
      * @param message
      * @param recipientPublicKey
      * @return
@@ -56,6 +53,7 @@ public class PrivateKey extends AbstractKey {
 
     /**
      * decrypts an encrypted message with the appropriate sender information.
+     *
      * @param encryptedMessage
      * @param nonce
      * @param senderPublicKey

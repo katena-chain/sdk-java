@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.utils;
 
 import okhttp3.HttpUrl;
@@ -19,6 +20,7 @@ public class Common {
 
     /**
      * joins the base path and paths array and adds the query values to return a new uri.
+     *
      * @param basePath
      * @param paths
      * @param queryValues
@@ -45,26 +47,27 @@ public class Common {
     }
 
     /**
-     * concatenates a company bcid and a uuid into a txid.
-     * @param companyBcid
+     * concatenates a company bcid and a uuid into a fully qualified id.
+     *
+     * @param companyBcId
      * @param uuid
      * @return
      */
-    public static String formatTxid(String companyBcid, String uuid) {
-        return String.format("%s-%s", companyBcid, uuid);
+    public static String concatFqId(String companyBcId, String uuid) {
+        return String.format("%s-%s", companyBcId, uuid);
     }
 
     /**
      * returns the query params array to request a pagination.
+     *
      * @param page
      * @param perPage
      * @return
      */
     public static HashMap<String, String> getPaginationQueryParams(int page, int perPage) {
-        HashMap<String, String> queryParams = new HashMap<>();
-        queryParams.put(PAGE_PARAM, String.valueOf(page));
-        queryParams.put(PER_PAGE_PARAM, String.valueOf(perPage));
-
-        return queryParams;
+        return new HashMap<String, String>() {{
+            put(PAGE_PARAM, String.valueOf(page));
+            put(PER_PAGE_PARAM, String.valueOf(perPage));
+        }};
     }
 }

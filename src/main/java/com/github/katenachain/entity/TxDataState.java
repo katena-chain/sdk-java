@@ -4,11 +4,12 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * TxDataState wraps a TxData and additional values in order to define the unique state to be signed.
@@ -16,22 +17,23 @@ import java.util.Date;
 public class TxDataState {
 
     @SerializedName("chain_id")
-    private String chainID;
+    private String chainId;
 
     @SerializedName("data")
     private TxData data;
 
     @SerializedName("nonce_time")
-    private Date nonceTime;
+    private Instant nonceTime;
 
     /**
      * TxDataState constructor.
+     *
      * @param data
      * @param nonceTime
-     * @param chainID
+     * @param chainId
      */
-    public TxDataState(String chainID, Date nonceTime, TxData data) {
-        this.chainID = chainID;
+    public TxDataState(String chainId, Instant nonceTime, TxData data) {
+        this.chainId = chainId;
         this.nonceTime = nonceTime;
         this.data = data;
     }

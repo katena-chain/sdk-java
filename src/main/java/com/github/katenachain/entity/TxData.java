@@ -4,7 +4,10 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity;
+
+import java.util.HashMap;
 
 /**
  * TxData interface defines the methods a concrete TxData must implement.
@@ -12,5 +15,7 @@ package com.github.katenachain.entity;
 public interface TxData {
     String getType();
 
-    String getId();
+    String getNamespace();
+
+    HashMap<String, String> getStateIds(String signerCompanyBcId);
 }

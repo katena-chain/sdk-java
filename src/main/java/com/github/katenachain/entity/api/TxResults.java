@@ -4,17 +4,18 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity.api;
 
 /**
- * TxWrappers wraps a list of TxWrapper with the total txs available.
+ * TxResults is returned by a GET request to retrieve a list of TxResult with the total txs available.
  */
-public class TxWrappers {
+public class TxResults {
 
-    private TxWrapper[] txs;
+    private TxResult[] txs;
     private int total;
 
-    public TxWrapper[] getTxs() {
+    public TxResult[] getTxs() {
         return this.txs;
     }
 

@@ -4,19 +4,19 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity.api;
 
-import com.github.katenachain.entity.Tx;
-
 /**
- * TxWrapper wraps a tx and its status.
+ * SendTxResult is returned by a POST request to retrieve the tx status and its hash.
  */
-public class TxWrapper {
-    private Tx tx;
+public class SendTxResult {
+
+    private String hash;
     private TxStatus status;
 
-    public Tx getTx() {
-        return this.tx;
+    public String getHash() {
+        return this.hash;
     }
 
     public TxStatus getStatus() {

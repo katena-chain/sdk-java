@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity.account;
 
 /**
@@ -17,20 +18,21 @@ public class Account {
     public static final String COMPANY_ADMIN_ROLE_ID = "company_admin";
     public static final String TYPE_CREATE = "create";
     public static final String TYPE_REVOKE = "revoke";
+    public static final String TYPE_ROTATE = "rotate";
 
-    public static String getCategoryKeyCreate() {
-        return String.format("%s.%s.%s", NAMESPACE, TYPE_KEY, TYPE_CREATE);
+    public static String getKeyCreateV1Type() {
+        return String.format("%s.%s.%s", getKeyIdKey(), TYPE_CREATE, "v1");
     }
 
-    public static String getCategoryKeyRevoke() {
-        return String.format("%s.%s.%s", NAMESPACE, TYPE_KEY, TYPE_REVOKE);
+    public static String getKeyRevokeV1Type() {
+        return String.format("%s.%s.%s", getKeyIdKey(), TYPE_REVOKE, "v1");
     }
 
-    public static String getTypeKeyCreateV1() {
-        return String.format("%s.%s", getCategoryKeyCreate(), "v1");
+    public static String getKeyRotateV1Type() {
+        return String.format("%s.%s.%s", getKeyIdKey(), TYPE_ROTATE, "v1");
     }
 
-    public static String getTypeKeyRevokeV1() {
-        return String.format("%s.%s", getCategoryKeyRevoke(), "v1");
+    public static String getKeyIdKey() {
+        return String.format("%s.%s", NAMESPACE, TYPE_KEY);
     }
 }

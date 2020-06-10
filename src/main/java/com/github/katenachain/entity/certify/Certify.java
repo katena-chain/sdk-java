@@ -4,6 +4,7 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity.certify;
 
 /**
@@ -18,23 +19,23 @@ public class Certify {
     public static final String TYPE_ED25519 = "ed25519";
     public static final String TYPE_NACL_BOX = "nacl_box";
 
-    public static String getCategoryCertificate() {
+    public static String getCertificateIdKey() {
         return String.format("%s.%s", NAMESPACE, TYPE_CERTIFICATE);
     }
 
-    public static String getCategorySecret() {
+    public static String getSecretIdKey() {
         return String.format("%s.%s", NAMESPACE, TYPE_SECRET);
     }
 
-    public static String getTypeCertificateRawV1() {
-        return String.format("%s.%s.%s", getCategoryCertificate(), TYPE_RAW, "v1");
+    public static String getCertificateRawV1Type() {
+        return String.format("%s.%s.%s", getCertificateIdKey(), TYPE_RAW, "v1");
     }
 
-    public static String getTypeCertificateEd25519V1() {
-        return String.format("%s.%s.%s", getCategoryCertificate(), TYPE_ED25519, "v1");
+    public static String getCertificateEd25519V1Type() {
+        return String.format("%s.%s.%s", getCertificateIdKey(), TYPE_ED25519, "v1");
     }
 
-    public static String getTypeSecretNaclBoxV1() {
-        return String.format("%s.%s.%s", getCategorySecret(), TYPE_NACL_BOX, "v1");
+    public static String getSecretNaclBoxV1Type() {
+        return String.format("%s.%s.%s", getSecretIdKey(), TYPE_NACL_BOX, "v1");
     }
 }

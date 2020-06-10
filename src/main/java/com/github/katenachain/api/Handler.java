@@ -4,19 +4,19 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.api;
 
-import com.github.katenachain.crypto.ED25519.PrivateKey;
 import com.github.katenachain.entity.Tx;
 import com.github.katenachain.entity.TxData;
 import com.github.katenachain.entity.TxDataState;
+import com.github.katenachain.entity.TxSigner;
 import com.github.katenachain.entity.account.KeyV1;
 import com.github.katenachain.entity.api.RawResponse;
-import com.github.katenachain.entity.api.TxStatus;
-import com.github.katenachain.entity.api.TxWrapper;
-import com.github.katenachain.entity.api.TxWrappers;
+import com.github.katenachain.entity.api.SendTxResult;
+import com.github.katenachain.entity.api.TxResult;
+import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.exceptions.ApiException;
-import com.github.katenachain.exceptions.ClientException;
 import com.github.katenachain.serializer.Serializer;
 import com.github.katenachain.utils.Common;
 
@@ -25,9 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.*;
+import java.time.Instant;
+import java.util.HashMap;
 
-import static java.lang.Math.ceil;
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -36,10 +36,11 @@ import static java.net.HttpURLConnection.HTTP_OK;
  */
 public class Handler {
 
+    private static final String LAST_PATH = "last";
+    private static final String STATE_PATH = "state";
+    private static final String TXS_PATH = "txs";
     private static final String CERTIFICATES_PATH = "certificates";
     private static final String SECRETS_PATH = "secrets";
-    private static final String LAST_PATH = "last";
-    private static final String TXS_PATH = "txs";
     private static final String COMPANIES_PATH = "companies";
     private static final String KEYS_PATH = "keys";
 
@@ -48,6 +49,7 @@ public class Handler {
 
     /**
      * Handler constructor.
+     *
      * @param apiUrl
      * @param serializer
      */
@@ -57,112 +59,171 @@ public class Handler {
     }
 
     /**
-     * accepts a tx and sends it to the Api to return a tx status or throws an error.
-     * @param tx
+     * fetches the API to return the last tx related to a certificate fqid.
+     *
+     * @param fqId
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public TxStatus sendTx(Tx tx) throws IOException, ApiException {
-        RawResponse apiResponse = this.apiClient.post(TXS_PATH, this.serializer.serialize(tx).getBytes());
-        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
-        if (apiResponse.getStatusCode() == HTTP_ACCEPTED) {
-            return (TxStatus) this.serializer.deserialize(jsonBody, TxStatus.class);
-        } else {
-            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
-        }
-    }
-
-    /**
-     * fetches the API and returns a tx wrapper or throws an error.
-     * @param id
-     * @return
-     * @throws IOException
-     * @throws ApiException
-     */
-    public TxWrapper retrieveLastCertificate(String id) throws IOException, ApiException {
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", CERTIFICATES_PATH, id, LAST_PATH));
+    public TxResult retrieveLastCertificateTx(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", CERTIFICATES_PATH, fqId, LAST_PATH));
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
-            return (TxWrapper) this.serializer.deserialize(jsonBody, TxWrapper.class);
+            return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
         } else {
             throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
         }
     }
 
     /**
-     * fetches the API and returns a tx wrappers or throws an error.
-     * @param id
+     * fetches the API to return all txs related to a certificate fqid.
+     *
+     * @param fqId
      * @param page
      * @param txPerPage
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public TxWrappers retrieveCertificates(String id, int page, int txPerPage) throws IOException, ApiException {
+    public TxResults retrieveCertificateTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", CERTIFICATES_PATH, id), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", CERTIFICATES_PATH, fqId), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
-            return (TxWrappers) this.serializer.deserialize(jsonBody, TxWrappers.class);
+            return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
         } else {
             throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
         }
     }
 
     /**
-     * fetches the API and returns a tx wrappers or throws an error.
-     * @param txPerPage
-     * @param page
-     * @param id
+     * fetches the API to return the last tx related to a secret fqid.
+     *
+     * @param fqId
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public TxWrappers retrieveSecrets(String id, int page, int txPerPage) throws IOException, ApiException {
-        HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", SECRETS_PATH, id), queryParams);
+    public TxResult retrieveLastSecretTx(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", SECRETS_PATH, fqId, LAST_PATH));
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
-            return (TxWrappers) this.serializer.deserialize(jsonBody, TxWrappers.class);
+            return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
         } else {
             throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
         }
     }
 
     /**
-     * fetches the API and returns a tx wrappers or throws an error.
-     * @param id
-     * @param page
+     * fetches the API to return all txs related to a secret fqid.
+     *
      * @param txPerPage
-     * @param txCategory
+     * @param page
+     * @param fqId
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public TxWrappers retrieveTxs(String txCategory, String id, int page, int txPerPage) throws IOException, ApiException {
+    public TxResults retrieveSecretTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", TXS_PATH, txCategory, id), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", SECRETS_PATH, fqId), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
-            return (TxWrappers) this.serializer.deserialize(jsonBody, TxWrappers.class);
+            return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
         } else {
             throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
         }
     }
 
     /**
-     * fetches the API and returns the list of keyV1 for a company or throws an error.
-     * @param txPerPage
-     * @param page
-     * @param companyBcid
+     * fetches the API to return the last tx related to a key fqid.
+     *
+     * @param fqId
      * @return
      * @throws IOException
      * @throws ApiException
      */
-    public KeyV1[] retrieveCompanyKeys(String companyBcid, int page, int txPerPage) throws IOException, ApiException {
+    public TxResult retrieveLastKeyTx(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", KEYS_PATH, fqId, LAST_PATH));
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
+     * fetches the API to return all txs related to a key fqid.
+     *
+     * @param txPerPage
+     * @param page
+     * @param fqId
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public TxResults retrieveKeyTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", COMPANIES_PATH, companyBcid, KEYS_PATH), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", KEYS_PATH, fqId), queryParams);
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
+     * fetches the API to return any tx by its hash.
+     *
+     * @param hash
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public TxResult retrieveTx(String hash) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", TXS_PATH, hash));
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
+     * fetches the API and returns a key from the state.
+     *
+     * @param fqId
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public KeyV1 retrieveKey(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", STATE_PATH, KEYS_PATH, fqId));
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (KeyV1) this.serializer.deserialize(jsonBody, KeyV1.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
+     * fetches the API and returns a list of keys for a company from the state.
+     *
+     * @param txPerPage
+     * @param page
+     * @param companyBcId
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public KeyV1[] retrieveCompanyKeys(String companyBcId, int page, int txPerPage) throws IOException, ApiException {
+        HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s/%s", STATE_PATH, COMPANIES_PATH, companyBcId, KEYS_PATH), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (KeyV1[]) this.serializer.deserialize(jsonBody, KeyV1[].class);
@@ -172,30 +233,50 @@ public class Handler {
     }
 
     /**
+     * accepts an encoded tx and sends it to the Api to return its status and its hash.
+     *
+     * @param tx
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public SendTxResult sendTx(Tx tx) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.post(TXS_PATH, this.serializer.serialize(tx).getBytes());
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_ACCEPTED) {
+            return (SendTxResult) this.serializer.deserialize(jsonBody, SendTxResult.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
      * signs a tx data and returns a new tx ready to be sent.
-     * @param chainID
+     *
+     * @param chainId
      * @param nonceTime
-     * @param privateKey
+     * @param txSigner
      * @param txData
      * @return
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeyException
      * @throws SignatureException
      */
-    public Tx signTx(PrivateKey privateKey, String chainID, Date nonceTime, TxData txData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        byte[] txDataState = this.getTxDataState(chainID, nonceTime, txData);
-        byte[] signature = privateKey.sign(txDataState);
-        return new Tx(txData, nonceTime, signature, privateKey.getPublicKey());
+    public Tx signTx(TxSigner txSigner, String chainId, Instant nonceTime, TxData txData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        byte[] txDataState = this.getTxDataState(chainId, nonceTime, txData);
+        byte[] signature = txSigner.getPrivateKey().sign(txDataState);
+        return new Tx(txData, nonceTime, signature, txSigner.getFqId());
     }
 
     /**
      * returns the sorted and marshaled json representation of a TxData ready to be signed.
+     *
      * @param txData
      * @param nonceTime
-     * @param chainID
+     * @param chainId
      * @return
      */
-    public byte[] getTxDataState(String chainID, Date nonceTime, TxData txData) {
-        return this.serializer.serialize(new TxDataState(chainID, nonceTime, txData)).getBytes();
+    public byte[] getTxDataState(String chainId, Instant nonceTime, TxData txData) {
+        return this.serializer.serialize(new TxDataState(chainId, nonceTime, txData)).getBytes();
     }
 }

@@ -5,55 +5,59 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.github.katenachain.entity.certify;
+package com.github.katenachain.entity.account;
 
+import com.github.katenachain.crypto.ED25519.PublicKey;
 import com.github.katenachain.entity.TxData;
 import com.github.katenachain.utils.Common;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
 /**
- * CertificateRawV1 is the first version of a raw certificate.
+ * KeyCreateV1 is the first version of a key rotate message.
  */
-public class CertificateRawV1 implements TxData {
+public class KeyRotateV1 implements TxData {
 
     private String id;
-    private byte[] value;
+
+    @SerializedName("public_key")
+    private PublicKey publicKey;
 
     /**
-     * CertificateRawV1 constructor.
+     * KeyCreateV1 constructor.
      *
      * @param id
-     * @param value
+     * @param publicKey
      */
-    public CertificateRawV1(String id, byte[] value) {
+    public KeyRotateV1(String id, PublicKey publicKey) {
         this.id = id;
-        this.value = value;
+        this.publicKey = publicKey;
     }
 
     public String getId() {
         return this.id;
     }
 
-    public byte[] getValue() {
-        return this.value;
+    public PublicKey getPublicKey() {
+        return this.publicKey;
     }
 
     @Override
     public String getType() {
-        return Certify.getCertificateRawV1Type();
+        return Account.getKeyRotateV1Type();
     }
 
     @Override
     public String getNamespace() {
-        return Certify.NAMESPACE;
+        return Account.NAMESPACE;
     }
 
     @Override
     public HashMap<String, String> getStateIds(String signerCompanyBcId) {
         String id = this.id;
         return new HashMap<String, String>() {{
-            put(Certify.getCertificateIdKey(), Common.concatFqId(signerCompanyBcId, id));
+            put(Account.getKeyIdKey(), Common.concatFqId(signerCompanyBcId, id));
         }};
     }
 }

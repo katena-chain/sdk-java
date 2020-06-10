@@ -4,13 +4,14 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.api;
 
 import com.github.katenachain.entity.api.RawResponse;
 import com.github.katenachain.utils.Common;
 import okhttp3.*;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,11 +20,12 @@ import java.util.HashMap;
  */
 public class Client {
 
-    private final OkHttpClient okHttpClient;
+    private OkHttpClient okHttpClient;
     private String apiUrl;
 
     /**
      * Client constructor.
+     *
      * @param apiUrl
      */
     public Client(String apiUrl) {
@@ -33,6 +35,7 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a GET HTTP request.
+     *
      * @param route
      * @return
      * @throws IOException
@@ -43,6 +46,7 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a GET HTTP request.
+     *
      * @param route
      * @param queryValues
      * @return
@@ -54,6 +58,7 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a POST HTTP request.
+     *
      * @param route
      * @param body
      * @return
@@ -65,6 +70,7 @@ public class Client {
 
     /**
      * wraps the doRequest method to do a POST HTTP request.
+     *
      * @param body
      * @param route
      * @param queryValues
@@ -77,6 +83,7 @@ public class Client {
 
     /**
      * uses the okhttp3.OkHttpClient to call a distant api and returns a response.
+     *
      * @param queryValues
      * @param route
      * @param body

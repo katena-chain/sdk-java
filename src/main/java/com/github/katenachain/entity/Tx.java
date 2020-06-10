@@ -4,12 +4,12 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain.entity;
 
 import com.google.gson.annotations.SerializedName;
-import com.github.katenachain.crypto.ED25519.PublicKey;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Tx wraps a tx data with its signature information and a nonce time to avoid replay attacks.
@@ -18,25 +18,27 @@ public class Tx {
 
     private TxData data;
     @SerializedName("nonce_time")
-    private Date nonceTime;
+    private Instant nonceTime;
     private byte[] signature;
-    private PublicKey signer;
+    @SerializedName("signer_fqid")
+    private String signerFqId;
 
     /**
      * Tx constructor.
-     * @param signer
+     *
+     * @param signerFqId
      * @param signature
      * @param data
      * @param nonceTime
      */
-    public Tx(TxData data, Date nonceTime, byte[] signature, PublicKey signer) {
+    public Tx(TxData data, Instant nonceTime, byte[] signature, String signerFqId) {
         this.data = data;
         this.nonceTime = nonceTime;
         this.signature = signature;
-        this.signer = signer;
+        this.signerFqId = signerFqId;
     }
 
-    public Date getNonceTime() {
+    public Instant getNonceTime() {
         return this.nonceTime;
     }
 
@@ -44,8 +46,8 @@ public class Tx {
         return this.data;
     }
 
-    public PublicKey getSigner() {
-        return this.signer;
+    public String getSignerFqId() {
+        return this.signerFqId;
     }
 
     public byte[] getSignature() {

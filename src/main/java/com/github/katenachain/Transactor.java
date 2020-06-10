@@ -4,166 +4,187 @@
  * This source code is licensed under the Apache 2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.github.katenachain;
 
 import com.github.katenachain.api.Handler;
-import com.github.katenachain.crypto.ED25519.PrivateKey;
 import com.github.katenachain.crypto.ED25519.PublicKey;
 import com.github.katenachain.entity.Tx;
 import com.github.katenachain.entity.TxData;
-import com.github.katenachain.entity.TxDataState;
-import com.github.katenachain.entity.account.Account;
+import com.github.katenachain.entity.TxSigner;
 import com.github.katenachain.entity.account.KeyCreateV1;
 import com.github.katenachain.entity.account.KeyRevokeV1;
+import com.github.katenachain.entity.account.KeyRotateV1;
 import com.github.katenachain.entity.account.KeyV1;
-import com.github.katenachain.entity.api.TxStatus;
-import com.github.katenachain.entity.api.TxWrapper;
-import com.github.katenachain.entity.api.TxWrappers;
+import com.github.katenachain.entity.api.SendTxResult;
+import com.github.katenachain.entity.api.TxResult;
+import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.entity.certify.CertificateEd25519V1;
 import com.github.katenachain.entity.certify.CertificateRawV1;
-import com.github.katenachain.entity.certify.Certify;
 import com.github.katenachain.entity.certify.SecretNaclBoxV1;
 import com.github.katenachain.exceptions.ApiException;
 import com.github.katenachain.exceptions.ClientException;
 import com.github.katenachain.serializer.Serializer;
 import com.github.katenachain.utils.Common;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Transactor provides helper methods to hide the complexity of Tx creation, signature and API dialog.
  */
 public class Transactor {
-    private PrivateKey txSigner;
+
     private Handler apiHandler;
-    private String companyBcid;
-    private String chainID;
+    private String chainId;
+    private TxSigner txSigner;
     private Serializer serializer;
 
     /**
      * Transactor constructor.
      */
-    public Transactor(String apiUrl, String chainID, String companyBcid, PrivateKey txSigner) {
-        this.serializer = new Serializer();
+    public Transactor(String apiUrl, String chainId, TxSigner txSigner) {
+        this.serializer = new Serializer(new GsonBuilder());
         this.apiHandler = new Handler(apiUrl, this.serializer);
-        this.chainID = chainID;
+        this.chainId = chainId;
         this.txSigner = txSigner;
-        this.companyBcid = companyBcid;
     }
 
     /**
      * Transactor constructor.
      */
     public Transactor(String apiUrl) {
-        this.serializer = new Serializer();
+        this.serializer = new Serializer(new GsonBuilder());
         this.apiHandler = new Handler(apiUrl, this.serializer);
-        this.chainID = "";
+        this.chainId = "";
         this.txSigner = null;
-        this.companyBcid = "";
     }
 
     /**
-     * creates a CertificateRaw (V1), wraps in a tx and sends it to the API.
+     * creates a CertificateRaw (V1) and sends it to the API.
      */
-    public TxStatus sendCertificateRawV1(String uuid, byte[] value) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
-        CertificateRawV1 certificate = new CertificateRawV1(Common.formatTxid(this.companyBcid, uuid), value);
+    public SendTxResult sendCertificateRawV1Tx(String id, byte[] value) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
+        CertificateRawV1 certificate = new CertificateRawV1(id, value);
         return this.sendTx(certificate);
     }
 
     /**
-     * creates a CertificateEd25519 (V1), wraps in a tx and sends it to the API.
+     * creates a CertificateEd25519 (V1) and sends it to the API.
      */
-    public TxStatus sendCertificateEd25519V1(String uuid, PublicKey signer, byte[] signature) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
-        CertificateEd25519V1 certificate = new CertificateEd25519V1(Common.formatTxid(this.companyBcid, uuid), signature, signer);
+    public SendTxResult sendCertificateEd25519V1Tx(String id, PublicKey signer, byte[] signature) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
+        CertificateEd25519V1 certificate = new CertificateEd25519V1(id, signer, signature);
         return this.sendTx(certificate);
+    }
+
+    /**
+     * creates a SecretNaclBox (V1) and sends it to the API.
+     */
+    public SendTxResult sendSecretNaclBoxV1Tx(String id, com.github.katenachain.crypto.Nacl.PublicKey sender, byte[] nonce, byte[] content) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException, ApiException, ClientException {
+        SecretNaclBoxV1 secret = new SecretNaclBoxV1(content, id, nonce, sender);
+        return this.sendTx(secret);
     }
 
     /**
      * creates a KeyCreate (V1) and sends it to the API.
      */
-    public TxStatus sendKeyCreateV1(String uuid, PublicKey publicKey, String role) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
-        KeyCreateV1 keyCreate = new KeyCreateV1(Common.formatTxid(this.companyBcid, uuid), publicKey, role);
+    public SendTxResult sendKeyCreateV1Tx(String id, PublicKey publicKey, String role) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
+        KeyCreateV1 keyCreate = new KeyCreateV1(id, publicKey, role);
         return this.sendTx(keyCreate);
+    }
+
+    /**
+     * creates a KeyRotate (V1) and sends it to the API.
+     */
+    public SendTxResult sendKeyRotateV1Tx(String id, PublicKey publicKey) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
+        KeyRotateV1 keyRotate = new KeyRotateV1(id, publicKey);
+        return this.sendTx(keyRotate);
     }
 
     /**
      * creates a KeyRevoke (V1) and sends it to the API.
      */
-    public TxStatus sendKeyRevokeV1(String uuid, PublicKey publicKey) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
-        KeyRevokeV1 keyRevoke = new KeyRevokeV1(Common.formatTxid(this.companyBcid, uuid), publicKey);
+    public SendTxResult sendKeyRevokeV1Tx(String id) throws ApiException, IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, ClientException {
+        KeyRevokeV1 keyRevoke = new KeyRevokeV1(id);
         return this.sendTx(keyRevoke);
     }
 
     /**
-     * creates a SecretNaclBox (V1), wraps in a tx and sends it to the API.
+     * creates a tx from a tx data and the provided tx signer info and chain id, signs it, encodes it and sends it
+     * to the api.
      */
-    public TxStatus sendSecretNaclBoxV1(String uuid, com.github.katenachain.crypto.Nacl.PublicKey sender, byte[] nonce, byte[] content) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException, ApiException, ClientException {
-        SecretNaclBoxV1 secret = new SecretNaclBoxV1(content, Common.formatTxid(this.companyBcid, uuid), nonce, sender);
-        return this.sendTx(secret);
-    }
-
-    /**
-     * signs and sends a tx to the Api.
-     */
-    public TxStatus sendTx(TxData txData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException, ApiException, ClientException {
-        if (this.txSigner == null || this.chainID.equals("")) {
-            throw new ClientException("impossible to create txs without a private key or chain id");
+    public SendTxResult sendTx(TxData txData) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException, ApiException, ClientException {
+        if (this.txSigner == null || this.txSigner.getFqId().equals("") || this.txSigner.getPrivateKey() == null || this.chainId.equals("")) {
+            throw new ClientException("impossible to create txs without a tx signer info or chain id");
         }
 
-        Tx tx = this.apiHandler.signTx(this.txSigner, this.chainID, new Date(), txData);
+        Tx tx = this.apiHandler.signTx(this.txSigner, this.chainId, Instant.now(), txData);
         return this.apiHandler.sendTx(tx);
     }
 
     /**
-     * fetches the API to find the corresponding tx and return a tx wrapper.
+     * fetches the API and returns the last tx related to a certificate fqid.
      */
-    public TxWrapper retrieveLastCertificate(String companyBcid, String uuid) throws IOException, ApiException {
-        return this.apiHandler.retrieveLastCertificate(Common.formatTxid(companyBcid, uuid));
+    public TxResult retrieveLastCertificateTx(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveLastCertificateTx(Common.concatFqId(companyBcId, id));
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers or an error.
+     * fetches the API and returns all txs related to a certificate fqid.
      */
-    public TxWrappers retrieveCertificates(String companyBcid, String uuid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveCertificates(Common.formatTxid(companyBcid, uuid), page, txPerPage);
+    public TxResults retrieveCertificateTxs(String companyBcId, String id, int page, int txPerPage) throws IOException, ApiException {
+        return this.apiHandler.retrieveCertificateTxs(Common.concatFqId(companyBcId, id), page, txPerPage);
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers or an error.
+     * fetches the API and returns the last tx related to a secret fqid.
      */
-    public TxWrappers retrieveKeyCreateTxs(String companyBcid, String uuid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveTxs(Account.getCategoryKeyCreate(), Common.formatTxid(companyBcid, uuid), page, txPerPage);
+    public TxResult retrieveLastSecretTx(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveLastSecretTx(Common.concatFqId(companyBcId, id));
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers or an error.
+     * fetches the API and returns all txs related to a secret fqid.
      */
-    public TxWrappers retrieveKeyRevokeTxs(String companyBcid, String uuid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveTxs(Account.getCategoryKeyRevoke(), Common.formatTxid(companyBcid, uuid), page, txPerPage);
+    public TxResults retrieveSecretTxs(String companyBcId, String id, int page, int txPerPage) throws IOException, ApiException {
+        return this.apiHandler.retrieveSecretTxs(Common.concatFqId(companyBcId, id), page, txPerPage);
     }
 
     /**
-     * fetches the API and returns the list of keyV1 for a company or an error.
+     * fetches the API and returns the last tx related to a key fqid.
      */
-    public KeyV1[] retrieveCompanyKeys(String companyBcid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveCompanyKeys(companyBcid, page, txPerPage);
+    public TxResult retrieveLastKeyTx(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveLastKeyTx(Common.concatFqId(companyBcId, id));
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers.
+     * fetches the API and returns all txs related to a key fqid.
      */
-    public TxWrappers retrieveSecrets(String companyBcid, String uuid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveSecrets(Common.formatTxid(companyBcid, uuid), page, txPerPage);
+    public TxResults retrieveKeyTxs(String companyBcId, String id, int page, int txPerPage) throws IOException, ApiException {
+        return this.apiHandler.retrieveKeyTxs(Common.concatFqId(companyBcId, id), page, txPerPage);
     }
 
     /**
-     * fetches the API to find the corresponding txs and returns tx wrappers or an error.
+     * fetches the API and return any tx by its hash.
      */
-    public TxWrappers retrieveTxs(String txCategory, String companyBcid, String uuid, int page, int txPerPage) throws IOException, ApiException {
-        return this.apiHandler.retrieveTxs(txCategory, Common.formatTxid(companyBcid, uuid), page, txPerPage);
+    public TxResult retrieveTx(String hash) throws IOException, ApiException {
+        return this.apiHandler.retrieveTx(hash);
+    }
+
+    /**
+     * fetches the API and returns a key from the state.
+     */
+    public KeyV1 retrieveKey(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveKey(Common.concatFqId(companyBcId, id));
+    }
+
+    /**
+     * fetches the API and returns a list of keys for a company from the state.
+     */
+    public KeyV1[] retrieveCompanyKeys(String companyBcId, int page, int txPerPage) throws IOException, ApiException {
+        return this.apiHandler.retrieveCompanyKeys(companyBcId, page, txPerPage);
     }
 }
