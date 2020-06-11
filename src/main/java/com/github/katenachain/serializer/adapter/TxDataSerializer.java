@@ -8,6 +8,7 @@
 package com.github.katenachain.serializer.adapter;
 
 import com.github.katenachain.entity.TxData;
+import com.github.katenachain.entity.UnknownTxData;
 import com.github.katenachain.entity.account.Account;
 import com.github.katenachain.entity.account.KeyCreateV1;
 import com.github.katenachain.entity.account.KeyRevokeV1;
@@ -41,9 +42,13 @@ public class TxDataSerializer implements JsonSerializer<TxData>, JsonDeserialize
 
     @Override
     public synchronized JsonElement serialize(TxData txData, Type type, JsonSerializationContext jsonSerializationContext) {
+        JsonElement value = jsonSerializationContext.serialize(txData);
+        if (txData instanceof UnknownTxData) {
+            return value;
+        }
         JsonObject txDataJsonObject = new JsonObject();
         txDataJsonObject.add("type", new JsonPrimitive(txData.getType()));
-        txDataJsonObject.add("value", jsonSerializationContext.serialize(txData));
+        txDataJsonObject.add("value", value);
         return txDataJsonObject;
     }
 
@@ -52,6 +57,6 @@ public class TxDataSerializer implements JsonSerializer<TxData>, JsonDeserialize
         if (jsonElement.getAsJsonObject().has("type") && getAvailableTypes().containsKey(jsonElement.getAsJsonObject().get("type").getAsString())) {
             return jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject().get("value"), getAvailableTypes().get(jsonElement.getAsJsonObject().get("type").getAsString()));
         }
-        return null;
+        return jsonDeserializationContext.deserialize(jsonElement.getAsJsonObject(), UnknownTxData.class);
     }
 }
