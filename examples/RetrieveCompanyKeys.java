@@ -8,7 +8,6 @@
 import com.github.katenachain.Transactor;
 import com.github.katenachain.entity.account.KeyV1;
 import com.github.katenachain.exceptions.ApiException;
-import com.github.katenachain.utils.Common;
 import common.Settings;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class RetrieveCompanyKeys {
 
         try {
             // Retrieve the keys from Katena
-            KeyV1[] keys = transactor.retrieveCompanyKeys(aliceCompanyBcId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+            KeyV1[] keys = transactor.retrieveCompanyKeys(aliceCompanyBcId, 1, Settings.txPerPage);
 
             System.out.println("Keys list :");
             printlnJson(keys);

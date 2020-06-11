@@ -10,7 +10,6 @@ import com.github.katenachain.entity.account.KeyV1;
 import com.github.katenachain.entity.api.TxResult;
 import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.exceptions.ApiException;
-import com.github.katenachain.utils.Common;
 import common.Settings;
 
 import java.io.IOException;
@@ -35,7 +34,7 @@ public class RetrieveKey {
 
         try {
             // Retrieve txs related to the key fqid
-            TxResults txResults = transactor.retrieveKeyTxs(aliceCompanyBcId, keyId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+            TxResults txResults = transactor.retrieveKeyTxs(aliceCompanyBcId, keyId, 1, Settings.txPerPage);
 
             System.out.println("Tx list :");
             printlnJson(txResults);

@@ -9,7 +9,6 @@ import com.github.katenachain.Transactor;
 import com.github.katenachain.entity.api.TxResult;
 import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.exceptions.ApiException;
-import com.github.katenachain.utils.Common;
 import common.Settings;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ public class RetrieveCertificate {
 
         try {
             // Retrieve txs related to the certificate fqid
-            TxResults txResults = transactor.retrieveCertificateTxs(aliceCompanyBcId, certificateId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+            TxResults txResults = transactor.retrieveCertificateTxs(aliceCompanyBcId, certificateId, 1, Settings.txPerPage);
 
             System.out.println("Tx list :");
             printlnJson(txResults);

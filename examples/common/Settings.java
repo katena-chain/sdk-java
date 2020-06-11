@@ -21,7 +21,7 @@ public class Settings {
     static public int txPerPage = 10;
 
     // Sample transaction ids used in examples
-    // If one id is already used on the Katena test network, feel free to change these values in DefaultSettings below
+    // If one id is already used on the Katena test network, feel free to change these values
     static public String certificateId = "ce492f92-a529-40c1-91e9-2af71e74ebea";
     static public String secretId = "3b1cfd5f-d0fe-478c-ba30-17817e29611e";
     static public String keyId = "9941bc28-4033-4d5a-a337-76b640223de2";

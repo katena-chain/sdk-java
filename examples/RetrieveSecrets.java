@@ -11,7 +11,6 @@ import com.github.katenachain.entity.api.TxResult;
 import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.entity.certify.SecretNaclBoxV1;
 import com.github.katenachain.exceptions.ApiException;
-import com.github.katenachain.utils.Common;
 import com.github.katenachain.utils.Crypto;
 import common.Settings;
 
@@ -42,7 +41,7 @@ public class RetrieveSecrets {
 
         try {
             // Retrieve txs related to the secret fqid
-            TxResults txResults = transactor.retrieveSecretTxs(aliceCompanyBcId, secretId, 1, Common.DEFAULT_PER_PAGE_PARAM);
+            TxResults txResults = transactor.retrieveSecretTxs(aliceCompanyBcId, secretId, 1, Settings.txPerPage);
 
             System.out.println("Tx list :");
             printlnJson(txResults);
