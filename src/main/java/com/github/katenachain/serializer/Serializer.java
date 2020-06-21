@@ -16,6 +16,7 @@ import com.github.katenachain.serializer.adapter.TxDataSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.lang.reflect.Type;
 import java.time.Instant;
 
 public class Serializer {
@@ -43,6 +44,17 @@ public class Serializer {
      */
     public String serialize(Object object) {
         return this.serializer.toJson(object);
+    }
+
+    /**
+     * serializes data in the appropriate format.
+     *
+     * @param object
+     * @param typeOfSrc
+     * @return
+     */
+    public String serialize(Object object, Type typeOfSrc) {
+        return this.serializer.toJson(object, typeOfSrc);
     }
 
     /**

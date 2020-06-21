@@ -7,6 +7,8 @@
 
 import com.github.katenachain.crypto.Nacl.PrivateKey;
 import com.github.katenachain.Transactor;
+import com.github.katenachain.entity.TxData;
+import com.github.katenachain.entity.account.KeyV1;
 import com.github.katenachain.entity.api.TxResult;
 import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.entity.certify.SecretNaclBoxV1;
@@ -52,15 +54,21 @@ public class RetrieveSecrets {
             System.out.println("Last Tx :");
             printlnJson(txResult);
 
-            SecretNaclBoxV1 txData = (SecretNaclBoxV1) txResult.getTx().getData();
+            // Retrieve the last state of a secret with that fqid
+            TxData secret = transactor.retrieveSecret(aliceCompanyBcId, secretId);
+
+            System.out.println("Secret :");
+            printlnJson(secret);
+
+            SecretNaclBoxV1 secretNaclBox = (SecretNaclBoxV1) secret;
             // Bob will use its private key and the sender's public key (needs to be Alice's) to decrypt a message
-            String decryptedContent = new String(bobCryptPrivateKey.open(txData.getContent(), txData.getSender(), txData.getNonce()), StandardCharsets.UTF_8);
+            String decryptedContent = new String(bobCryptPrivateKey.open(secretNaclBox.getContent(), secretNaclBox.getSender(), secretNaclBox.getNonce()), StandardCharsets.UTF_8);
 
             if (decryptedContent.equals("")) {
                 decryptedContent = "Unable to decrypt";
             }
 
-            System.out.println(String.format("Decrypted content for last Tx : %s", decryptedContent));
+            System.out.println(String.format("Decrypted content : %s", decryptedContent));
         } catch (IOException | ApiException e) {
             System.out.println(e.getMessage());
         }

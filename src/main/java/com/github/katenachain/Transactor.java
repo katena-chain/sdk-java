@@ -175,6 +175,20 @@ public class Transactor {
     }
 
     /**
+     * fetches the API and returns a certificate from the state.
+     */
+    public TxData retrieveCertificate(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveCertificate(Common.concatFqId(companyBcId, id));
+    }
+
+    /**
+     * fetches the API and returns a secret from the state.
+     */
+    public TxData retrieveSecret(String companyBcId, String id) throws IOException, ApiException {
+        return this.apiHandler.retrieveSecret(Common.concatFqId(companyBcId, id));
+    }
+
+    /**
      * fetches the API and returns a key from the state.
      */
     public KeyV1 retrieveKey(String companyBcId, String id) throws IOException, ApiException {

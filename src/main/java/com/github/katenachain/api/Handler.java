@@ -194,6 +194,42 @@ public class Handler {
     }
 
     /**
+     * fetches the API and returns a certificate from the state.
+     *
+     * @param fqId
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public TxData retrieveCertificate(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", STATE_PATH, CERTIFICATES_PATH, fqId));
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (TxData) this.serializer.deserialize(jsonBody, TxData.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
+     * fetches the API and returns a secret from the state.
+     *
+     * @param fqId
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     */
+    public TxData retrieveSecret(String fqId) throws IOException, ApiException {
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", STATE_PATH, SECRETS_PATH, fqId));
+        String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
+        if (apiResponse.getStatusCode() == HTTP_OK) {
+            return (TxData) this.serializer.deserialize(jsonBody, TxData.class);
+        } else {
+            throw (ApiException) this.serializer.deserialize(jsonBody, ApiException.class);
+        }
+    }
+
+    /**
      * fetches the API and returns a key from the state.
      *
      * @param fqId

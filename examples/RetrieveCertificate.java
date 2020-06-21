@@ -6,6 +6,7 @@
  */
 
 import com.github.katenachain.Transactor;
+import com.github.katenachain.entity.TxData;
 import com.github.katenachain.entity.api.TxResult;
 import com.github.katenachain.entity.api.TxResults;
 import com.github.katenachain.exceptions.ApiException;
@@ -43,6 +44,12 @@ public class RetrieveCertificate {
 
             System.out.println("Last Tx :");
             printlnJson(txResult);
+
+            // Retrieve the last state of a certificate with that fqid
+            TxData certificate = transactor.retrieveCertificate(aliceCompanyBcId, certificateId);
+
+            System.out.println("Certificate :");
+            printlnJson(certificate);
 
         } catch (IOException | ApiException e) {
             System.out.println(e.getMessage());
