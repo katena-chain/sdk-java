@@ -67,7 +67,7 @@ public class Handler {
      * @throws ApiException
      */
     public TxResult retrieveLastCertificateTx(String fqId) throws IOException, ApiException {
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", CERTIFICATES_PATH, fqId, LAST_PATH));
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s/%s", TXS_PATH, CERTIFICATES_PATH, fqId, LAST_PATH));
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
@@ -88,7 +88,7 @@ public class Handler {
      */
     public TxResults retrieveCertificateTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", CERTIFICATES_PATH, fqId), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", TXS_PATH, CERTIFICATES_PATH, fqId), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
@@ -106,7 +106,7 @@ public class Handler {
      * @throws ApiException
      */
     public TxResult retrieveLastSecretTx(String fqId) throws IOException, ApiException {
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", SECRETS_PATH, fqId, LAST_PATH));
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s/%s", TXS_PATH, SECRETS_PATH, fqId, LAST_PATH));
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
@@ -127,7 +127,7 @@ public class Handler {
      */
     public TxResults retrieveSecretTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", SECRETS_PATH, fqId), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", TXS_PATH, SECRETS_PATH, fqId), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
@@ -145,7 +145,7 @@ public class Handler {
      * @throws ApiException
      */
     public TxResult retrieveLastKeyTx(String fqId) throws IOException, ApiException {
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", KEYS_PATH, fqId, LAST_PATH));
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s/%s", TXS_PATH, KEYS_PATH, fqId, LAST_PATH));
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResult) this.serializer.deserialize(jsonBody, TxResult.class);
@@ -166,7 +166,7 @@ public class Handler {
      */
     public TxResults retrieveKeyTxs(String fqId, int page, int txPerPage) throws IOException, ApiException {
         HashMap<String, String> queryParams = Common.getPaginationQueryParams(page, txPerPage);
-        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s", KEYS_PATH, fqId), queryParams);
+        RawResponse apiResponse = this.apiClient.get(String.format("%s/%s/%s", TXS_PATH, KEYS_PATH, fqId), queryParams);
         String jsonBody = new String(apiResponse.getBody(), StandardCharsets.UTF_8);
         if (apiResponse.getStatusCode() == HTTP_OK) {
             return (TxResults) this.serializer.deserialize(jsonBody, TxResults.class);
